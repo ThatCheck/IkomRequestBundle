@@ -1,0 +1,10 @@
+services:
+    json.normalizer:
+        class: 'AppBundle\Normalizer\JSONNormalizer'
+        public: true
+
+    ikom.request.client.json:
+        class: 'AppBundle\Request\IkomRequest'
+        public: true
+        shared: false
+        arguments: ['@json.normalizer', '@request_stack']
