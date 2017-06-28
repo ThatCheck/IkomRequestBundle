@@ -1,0 +1,23 @@
+{
+    "name" : "Ikom/RequestBundle",
+    "description" : "A requester utility, to make requests easily between microservices",
+    "type" : "symfony-bundle",
+    "authors" : [{
+        "name" : "François DE MATOS",
+        "email" : "f.dematos@ikom.fr"
+    }],
+    "keywords" : [
+        "request", "guzzle", "ikom"
+    ],
+    "license" : [
+        "MIT"
+    ],
+    "require" : {},
+    "autoload" : {
+        "psr-0" : {
+            "Ikom\\RequestBundle" : ""
+        }
+    },
+    "target-dir" : "Ikom/RequestBundle",
+    "repositories" : [{}]
+}
