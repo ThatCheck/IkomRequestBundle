@@ -96,28 +96,52 @@ class IkomRequest implements IRequest
     /**
      * @param $uri
      * @param $loadData
-     * @return ResponseInterface
+     * @return IkomRequest
      */
     public function post($uri, $loadData)
     {
-        return $this->client->post($uri, ['headers' => $this->headers, 'body' => $loadData]);
+        $res = $this->client->post($uri, ['headers' => $this->headers, 'body' => $loadData]);
+
+        $specification = new StatusNotOkSpecification();
+        if ($specification->isSatisfiedBy($res->getStatusCode())) {
+            throw new ServiceNotAvailableException($res->getStatusCode());
+        }
+
+        $this->guzzleRequest = $res;
+        return $this;
     }
 
     /**
      * @param $uri
-     * @return ResponseInterface
+     * @return IkomRequest
      */
     public function delete($uri)
     {
-        return $this->client->delete($uri, ['headers' => $this->headers]);
+        $res = $this->client->delete($uri, ['headers' => $this->headers]);
+
+        $specification = new StatusNotOkSpecification();
+        if ($specification->isSatisfiedBy($res->getStatusCode())) {
+            throw new ServiceNotAvailableException($res->getStatusCode());
+        }
+
+        $this->guzzleRequest = $res;
+        return $this;
     }
 
     /**
      * @param $uri
-     * @return ResponseInterface
+     * @return IkomRequest
      */
     public function put($uri)
     {
-        return $this->client->put($uri, ['headers' => $this->headers]);
+        $res = $this->client->put($uri, ['headers' => $this->headers]);
+
+        $specification = new StatusNotOkSpecification();
+        if ($specification->isSatisfiedBy($res->getStatusCode())) {
+            throw new ServiceNotAvailableException($res->getStatusCode());
+        }
+
+        $this->guzzleRequest = $res;
+        return $this;
     }
 }
