@@ -12,7 +12,9 @@
     "license" : [
         "MIT"
     ],
-    "require" : {},
+    "require" : {
+        "eightpoints/guzzle-bundle": "dev-master"
+    },
     "autoload" : {
         "psr-0" : {
             "Ikom\\RequestBundle" : ""
