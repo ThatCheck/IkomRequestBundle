@@ -13,7 +13,7 @@
         "MIT"
     ],
     "require" : {
-        "eightpoints/guzzle-bundle": "dev-master"
+        "eightpoints/guzzle-bundle": "~6.0"
     },
     "autoload" : {
         "psr-0" : {
