@@ -55,7 +55,17 @@ class IkomRequest implements IRequest
         return $this;
     }
 
+    public function getGuzzleRequest()
+    {
+        return $this->guzzleRequest;
+    }
+
     public function getBody()
+    {
+        return $this->guzzleRequest->getBody();
+    }
+
+    public function getDecodedBody()
     {
         return $this->decode($this->guzzleRequest->getBody());
     }
@@ -143,5 +153,10 @@ class IkomRequest implements IRequest
 
         $this->guzzleRequest = $res;
         return $this;
+    }
+
+    public function addHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
     }
 }

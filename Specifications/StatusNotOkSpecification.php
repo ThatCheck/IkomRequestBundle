@@ -8,6 +8,6 @@ class StatusNotOkSpecification extends Specification
 {
     public function isSatisfiedBy($object)
     {
-        return $object != 200;
+        return $object >= 300;
     }
 }
