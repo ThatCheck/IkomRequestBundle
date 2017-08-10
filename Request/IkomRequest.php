@@ -38,10 +38,57 @@ class IkomRequest implements IRequest
         $this->originRequest = '';
         $this->headers = ['accept' => 'application/ld+json',
             'ikom-request-id' => $this->idRequest,
-            'ikom-request-origin' => $this->originRequest
+            'ikom-request-origin' => $this->originRequest,
+            'Authorization' => $this->request->headers->get('Authorization')
         ];
     }
 
+    /**
+     * @return ResponseInterface
+     */
+    public function getGuzzleRequest()
+    {
+        return $this->guzzleRequest;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBodyContents()
+    {
+        return $this->getBody()->getContents();
+    }
+
+    /**
+     * @return array
+     */
+    public function getDecodedBodyContents()
+    {
+        return $this->decode($this->getBody()->getContents());
+    }
+
+    /**
+     * @return \Psr\Http\Message\StreamInterface
+     */
+    public function getBody()
+    {
+        return $this->guzzleRequest->getBody();
+    }
+
+    /**
+     * @return array
+     */
+    public function getDecodedBody()
+    {
+        return $this->decode($this->guzzleRequest->getBody());
+    }
+
+    /**
+     * @param $method
+     * @param $uri
+     * @param string $loadData
+     * @return IkomRequest
+     */
     public function makeRequest($method, $uri, $loadData = '')
     {
         $res = $this->makeGuzzleRequest($method, $uri, $loadData);
@@ -55,21 +102,6 @@ class IkomRequest implements IRequest
         return $this;
     }
 
-    public function getGuzzleRequest()
-    {
-        return $this->guzzleRequest;
-    }
-
-    public function getBody()
-    {
-        return $this->guzzleRequest->getBody();
-    }
-
-    public function getDecodedBody()
-    {
-        return $this->decode($this->guzzleRequest->getBody());
-    }
-
     /**
      * @param $method
      * @param $uri
@@ -81,9 +113,31 @@ class IkomRequest implements IRequest
         return $this->client->request($method, $uri, ['headers' => $this->headers, 'body' => $loadData]);
     }
 
+    /**
+     * @param $buff
+     * @return array
+     */
     public function decode($buff)
     {
         return $this->normalizer->decode($buff);
+    }
+
+    /**
+     * @param $buff
+     * @return string
+     */
+    public function encode($buff)
+    {
+        return $this->normalizer->encode($buff);
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     */
+    public function addHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
     }
 
     /**
@@ -110,6 +164,7 @@ class IkomRequest implements IRequest
      */
     public function post($uri, $loadData)
     {
+        $this->addHeader('Content-Type', 'application/ld+json');
         $res = $this->client->post($uri, ['headers' => $this->headers, 'body' => $loadData]);
 
         $specification = new StatusNotOkSpecification();
@@ -153,10 +208,5 @@ class IkomRequest implements IRequest
 
         $this->guzzleRequest = $res;
         return $this;
-    }
-
-    public function addHeader($key, $value)
-    {
-        $this->headers[$key] = $value;
     }
 }

@@ -18,7 +18,7 @@ class JSONNormalizer implements INormalizer
     public function decode($buff)
     {
         if (is_string($buff)) {
-            return json_decode($buff);
+            return json_decode($buff, true);
         }
 
         return array();
