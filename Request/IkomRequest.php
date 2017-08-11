@@ -21,6 +21,9 @@ class IkomRequest implements IRequest
      * @var ResponseInterface
      */
     private $guzzleRequest;
+    /**
+     * @var null|\Symfony\Component\HttpFoundation\Request
+     */
     private $request;
     private $idRequest;
     private $originRequest;
@@ -32,10 +35,8 @@ class IkomRequest implements IRequest
         $this->normalizer = $normalizer;
         $this->request = $requestStack->getMasterRequest();
         $this->client = new GuzzleHttp\Client();
-        // TODO: $this->idRequest = $request->get();
-        $this->idRequest = '';
-        // TODO: $this->originRequest = $request->get();
-        $this->originRequest = '';
+        $this->idRequest = $this->request->headers->get('ikom-request-id');
+        $this->originRequest = $this->request->headers->get('ikom-request-origin');
         $this->headers = ['accept' => 'application/ld+json',
             'ikom-request-id' => $this->idRequest,
             'ikom-request-origin' => $this->originRequest,
