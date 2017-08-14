@@ -108,16 +108,13 @@ class IkomRequest implements IRequest
     /**
      * @param $method
      * @param $uri
-     * @param string $loadData
+     * @param array $options
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    public function makeGuzzleRequest($method, $uri, $options = [])
+    public function makeGuzzleRequest($method, $uri, $payLoad)
     {
-        if (!isset($options['headers']) && !empty($options['headers'])) {
-            throw new BadRequestOptionsException('500');
-        }
-
         $options['headers'] = $this->headers;
+        $options['body'] = $payLoad;
 
         return $this->client->request($method, $uri, $options);
     }
