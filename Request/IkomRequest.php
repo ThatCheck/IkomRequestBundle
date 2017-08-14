@@ -41,11 +41,12 @@ class IkomRequest implements IRequest
 
     private function initHeaders()
     {
-        $this->headers = ['accept' => 'application/ld+json',
-            'ikom-request-id' => $this->request->headers->get('ikom-request-id'),
-            'ikom-request-origin' => $this->request->headers->get('ikom-request-origin'),
-            'Authorization' => $this->request->headers->get('Authorization')
-        ];
+        $this->headers = ['accept' => 'application/ld+json'];
+        if (isset($this->request->headers)) {
+            $this->addHeader('ikom-request-id', $this->request->headers->get('ikom-request-id'));
+            $this->addHeader('ikom-request-origin', $this->request->headers->get('ikom-request-origin'));
+            $this->addHeader('Authorization', $this->request->headers->get('Authorization'));
+        }
     }
 
     /**
