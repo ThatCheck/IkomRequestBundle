@@ -8,7 +8,7 @@ interface IRequest
 {
     public function makeRequest($method, $uri, $load_data);
 
-    public function makeGuzzleRequest($method, $uri, array $options);
+    public function makeGuzzleRequest($method, $uri, $payLoad);
 
     public function getBody();
 
