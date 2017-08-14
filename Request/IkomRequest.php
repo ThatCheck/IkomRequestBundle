@@ -4,7 +4,9 @@
 
 namespace Ikom\RequestBundle\Request;
 
+use Ikom\RequestBundle\Exceptions\BadRequestOptionsException;
 use Ikom\RequestBundle\Exceptions\ServiceNotAvailableException;
+use Ikom\RequestBundle\Specifications\RequestNeedPayloadSpecification;
 use Ikom\RequestBundle\Specifications\StatusNotOkSpecification;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp;
@@ -25,21 +27,23 @@ class IkomRequest implements IRequest
      * @var null|\Symfony\Component\HttpFoundation\Request
      */
     private $request;
-    private $idRequest;
-    private $originRequest;
     private $client;
     private $headers;
+    private $body;
 
     public function __construct(INormalizer $normalizer, RequestStack $requestStack)
     {
         $this->normalizer = $normalizer;
         $this->request = $requestStack->getMasterRequest();
         $this->client = new GuzzleHttp\Client();
-        $this->idRequest = $this->request->headers->get('ikom-request-id');
-        $this->originRequest = $this->request->headers->get('ikom-request-origin');
+        $this->initHeaders();
+    }
+
+    private function initHeaders()
+    {
         $this->headers = ['accept' => 'application/ld+json',
-            'ikom-request-id' => $this->idRequest,
-            'ikom-request-origin' => $this->originRequest,
+            'ikom-request-id' => $this->request->headers->get('ikom-request-id'),
+            'ikom-request-origin' => $this->request->headers->get('ikom-request-origin'),
             'Authorization' => $this->request->headers->get('Authorization')
         ];
     }
@@ -77,25 +81,22 @@ class IkomRequest implements IRequest
     }
 
     /**
-     * @return array
-     */
-    public function getDecodedBody()
-    {
-        return $this->decode($this->guzzleRequest->getBody());
-    }
-
-    /**
      * @param $method
      * @param $uri
      * @param string $loadData
      * @return IkomRequest
      */
-    public function makeRequest($method, $uri, $loadData = '')
+    public function makeRequest($method, $uri, $options = [])
     {
-        $res = $this->makeGuzzleRequest($method, $uri, $loadData);
+        $res = $this->makeGuzzleRequest($method, $uri, $options);
 
-        $specification = new StatusNotOkSpecification();
-        if ($specification->isSatisfiedBy($res->getStatusCode())) {
+        $requestNeedPayloadSpecification = new RequestNeedPayloadSpecification();
+        if ($requestNeedPayloadSpecification->isSatisfiedBy($method)) {
+            $this->addHeader('Content', 'application/ld+json');
+        }
+
+        $statusNotOkSspecification = new StatusNotOkSpecification();
+        if ($statusNotOkSspecification->isSatisfiedBy($res->getStatusCode())) {
             throw new ServiceNotAvailableException($res->getStatusCode());
         }
 
@@ -109,16 +110,22 @@ class IkomRequest implements IRequest
      * @param string $loadData
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    public function makeGuzzleRequest($method, $uri, $loadData = '')
+    public function makeGuzzleRequest($method, $uri, $options = [])
     {
-        return $this->client->request($method, $uri, ['headers' => $this->headers, 'body' => $loadData]);
+        if (!isset($options['headers']) && !empty($options['headers'])) {
+            throw new BadRequestOptionsException('500');
+        }
+
+        $options['headers'] = $this->headers;
+
+        return $this->client->request($method, $uri, $options);
     }
 
     /**
      * @param $buff
      * @return array
      */
-    public function decode($buff)
+    private function decode($buff)
     {
         return $this->normalizer->decode($buff);
     }
@@ -127,7 +134,7 @@ class IkomRequest implements IRequest
      * @param $buff
      * @return string
      */
-    public function encode($buff)
+    private function encode($buff)
     {
         return $this->normalizer->encode($buff);
     }
@@ -147,15 +154,7 @@ class IkomRequest implements IRequest
      */
     public function get($uri)
     {
-        $res = $this->client->get($uri, ['headers' => $this->headers]);
-
-        $specification = new StatusNotOkSpecification();
-        if ($specification->isSatisfiedBy($res->getStatusCode())) {
-            throw new ServiceNotAvailableException($res->getStatusCode());
-        }
-
-        $this->guzzleRequest = $res;
-        return $this;
+        return $this->makeRequest('GET', $uri);
     }
 
     /**
@@ -165,16 +164,7 @@ class IkomRequest implements IRequest
      */
     public function post($uri, $loadData)
     {
-        $this->addHeader('Content-Type', 'application/ld+json');
-        $res = $this->client->post($uri, ['headers' => $this->headers, 'body' => $loadData]);
-
-        $specification = new StatusNotOkSpecification();
-        if ($specification->isSatisfiedBy($res->getStatusCode())) {
-            throw new ServiceNotAvailableException($res->getStatusCode());
-        }
-
-        $this->guzzleRequest = $res;
-        return $this;
+        return $this->makeRequest('POST', $uri, $loadData);
     }
 
     /**
@@ -183,31 +173,15 @@ class IkomRequest implements IRequest
      */
     public function delete($uri)
     {
-        $res = $this->client->delete($uri, ['headers' => $this->headers]);
-
-        $specification = new StatusNotOkSpecification();
-        if ($specification->isSatisfiedBy($res->getStatusCode())) {
-            throw new ServiceNotAvailableException($res->getStatusCode());
-        }
-
-        $this->guzzleRequest = $res;
-        return $this;
+        return $this->makeRequest('DELETE', $uri);
     }
 
     /**
      * @param $uri
      * @return IkomRequest
      */
-    public function put($uri)
+    public function put($uri, $loadData)
     {
-        $res = $this->client->put($uri, ['headers' => $this->headers]);
-
-        $specification = new StatusNotOkSpecification();
-        if ($specification->isSatisfiedBy($res->getStatusCode())) {
-            throw new ServiceNotAvailableException($res->getStatusCode());
-        }
-
-        $this->guzzleRequest = $res;
-        return $this;
+        return $this->makeRequest('PUT', $uri, $loadData);
     }
 }

@@ -12,13 +12,11 @@ interface IRequest
 
     public function getBody();
 
-    public function decode($buff);
-
     public function get($uri);
 
     public function post($uri, $load_data);
 
     public function delete($uri);
 
-    public function put($uri);
+    public function put($uri, $loadData);
 }

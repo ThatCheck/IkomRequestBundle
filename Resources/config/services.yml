@@ -1,5 +1,5 @@
 services:
-    json.normalizer:
+    ikom.json.normalizer:
         class: 'Ikom\RequestBundle\Normalizer\JSONNormalizer'
         public: true
 
@@ -7,4 +7,4 @@ services:
         class: 'Ikom\RequestBundle\Request\IkomRequest'
         public: true
         shared: false
-        arguments: ['@json.normalizer', '@request_stack']
+        arguments: ['@ikom.json.normalizer', '@request_stack']

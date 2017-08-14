@@ -1,12 +1,12 @@
 <?php
 
-// src Ikom/RequestBundle/Exceptions/ServiceNotAvailableException.php
+// src Ikom/RequestBundle/Exceptions/BadRequestOptionsException.php
 
 namespace Ikom\RequestBundle\Exceptions;
 
 use Throwable;
 
-class ServiceNotAvailableException extends \Exception
+class BadRequestOptionsException extends \Exception
 {
     /**
      * @var int
@@ -16,7 +16,7 @@ class ServiceNotAvailableException extends \Exception
     function __construct($statusCode, $code = 0, Throwable $previous = null)
     {
         $this->statusCode = $statusCode;
-        $message = "Service Not Available : Code " . $this->statusCode;
+        $message = "Bad request options : Code " . $this->statusCode;
 
         parent::__construct($message, $code, $previous);
     }
