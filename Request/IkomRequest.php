@@ -94,7 +94,7 @@ class IkomRequest implements IRequest
             $this->addHeader('Content', 'application/ld+json');
         }
 
-        $res = $this->makeGuzzleRequest($method, $uri, $this->prepareOptions($loadData););
+        $res = $this->makeGuzzleRequest($method, $uri, $this->prepareOptions($loadData));
 
         $statusNotOkSspecification = new StatusNotOkSpecification();
         if ($statusNotOkSspecification->isSatisfiedBy($res->getStatusCode())) {
