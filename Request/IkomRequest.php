@@ -87,14 +87,14 @@ class IkomRequest implements IRequest
      * @param string $loadData
      * @return IkomRequest
      */
-    public function makeRequest($method, $uri, $options = [])
+    public function makeRequest($method, $uri, $loadData = "")
     {
-        $res = $this->makeGuzzleRequest($method, $uri, $options);
-
         $requestNeedPayloadSpecification = new RequestNeedPayloadSpecification();
         if ($requestNeedPayloadSpecification->isSatisfiedBy($method)) {
             $this->addHeader('Content', 'application/ld+json');
         }
+
+        $res = $this->makeGuzzleRequest($method, $uri, $this->prepareOptions($loadData););
 
         $statusNotOkSspecification = new StatusNotOkSpecification();
         if ($statusNotOkSspecification->isSatisfiedBy($res->getStatusCode())) {
@@ -111,12 +111,20 @@ class IkomRequest implements IRequest
      * @param array $options
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    public function makeGuzzleRequest($method, $uri, $payLoad)
+    public function makeGuzzleRequest($method, $uri, $options)
+    {
+        return $this->client->request($method, $uri, $options);
+    }
+
+    /**
+     * @param $loadData
+     */
+    public function prepareOptions($loadData)
     {
         $options['headers'] = $this->headers;
-        $options['body'] = $payLoad;
+        $options['body'] = $loadData;
 
-        return $this->client->request($method, $uri, $options);
+        return $options;
     }
 
     /**
