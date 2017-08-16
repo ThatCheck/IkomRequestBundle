@@ -91,7 +91,7 @@ class IkomRequest implements IRequest
     {
         $requestNeedPayloadSpecification = new RequestNeedPayloadSpecification();
         if ($requestNeedPayloadSpecification->isSatisfiedBy($method)) {
-            $this->addHeader('Content', 'application/ld+json');
+            $this->addHeader('content-type', 'application/ld+json');
         }
 
         $res = $this->makeGuzzleRequest($method, $uri, $this->prepareOptions($loadData));

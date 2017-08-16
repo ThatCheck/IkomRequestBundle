@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4dc7c469-ab69-4d2c-8d32-606d5582827a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Request/IkomRequest.php" afterPath="$PROJECT_DIR$/Request/IkomRequest.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -37,11 +38,9 @@
       <file leaf-file-name="IkomRequest.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Request/IkomRequest.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="298">
-              <caret line="96" column="87" lean-forward="false" selection-start-line="96" selection-start-column="87" selection-end-line="96" selection-end-column="87" />
-              <folding>
-                <element signature="e#99#160#0#PHP" expanded="true" />
-              </folding>
+            <state relative-caret-position="560">
+              <caret line="96" column="0" lean-forward="false" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -356,12 +355,12 @@
       <workItem from="1498548868705" duration="22303000" />
       <workItem from="1501163108904" duration="2249000" />
       <workItem from="1502454784205" duration="3414000" />
-      <workItem from="1502695608617" duration="8723000" />
+      <workItem from="1502695608617" duration="10684000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="40054000" />
+    <option name="totallyTimeSpent" value="42015000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -519,11 +518,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Request/IkomRequest.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="96" column="87" lean-forward="false" selection-start-line="96" selection-start-column="87" selection-end-line="96" selection-end-column="87" />
-          <folding>
-            <element signature="e#99#160#0#PHP" expanded="true" />
-          </folding>
+        <state relative-caret-position="560">
+          <caret line="96" column="0" lean-forward="false" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
