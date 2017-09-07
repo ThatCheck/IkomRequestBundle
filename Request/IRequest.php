@@ -6,7 +6,7 @@ namespace Ikom\RequestBundle\Request;
 
 interface IRequest
 {
-    public function makeRequest($method, $uri, $load_data);
+    public function makeRequest($method, $uri, array $loadData);
 
     public function makeGuzzleRequest($method, $uri, $payLoad);
 

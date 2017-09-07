@@ -39,12 +39,25 @@ class IkomRequest implements IRequest
         $this->initHeaders();
     }
 
+    /**
+     * @param string $host
+     * @param string $path Should not start with a /
+     * @param int $port
+     * @param bool $useSymfonyURI
+     * @return string
+     */
+    public function generateURL(string $host, string $path, int $port = 80, bool $useSymfonyURI = true ) : string
+    {
+        $path = ($useSymfonyURI === true && getenv('SYMFONY_ENV') === 'dev' ? '/app_dev.php/' : '/') . $path;
+        return "http://$host:$port$path";
+    }
+
     private function initHeaders()
     {
         $this->headers = ['accept' => 'application/ld+json'];
         if (isset($this->request->headers)) {
-            $this->addHeader('ikom-request-id', $this->request->headers->get('ikom-request-id'));
-            $this->addHeader('ikom-request-origin', $this->request->headers->get('ikom-request-origin'));
+            $this->addHeader('Ikom-Request-ID', $this->request->headers->get('Ikom-Request-ID'));
+            $this->addHeader('Ikom-Request-Origin', $this->request->headers->get('Ikom-Request-Origin'));
             $this->addHeader('Authorization', $this->request->headers->get('Authorization'));
         }
     }
@@ -84,24 +97,23 @@ class IkomRequest implements IRequest
     /**
      * @param $method
      * @param $uri
-     * @param string $loadData
+     * @param array $loadData
      * @return IkomRequest
+     * @throws ServiceNotAvailableException
      */
-    public function makeRequest($method, $uri, $loadData = "")
+    public function makeRequest($method, $uri, array $loadData = array())
     {
         $requestNeedPayloadSpecification = new RequestNeedPayloadSpecification();
         if ($requestNeedPayloadSpecification->isSatisfiedBy($method)) {
             $this->addHeader('content-type', 'application/ld+json');
         }
 
-        $res = $this->makeGuzzleRequest($method, $uri, $this->prepareOptions($loadData));
+        $this->guzzleRequest = $this->makeGuzzleRequest($method, $uri, $this->prepareOptions($method, $loadData));
 
         $statusNotOkSspecification = new StatusNotOkSpecification();
-        if ($statusNotOkSspecification->isSatisfiedBy($res->getStatusCode())) {
-            throw new ServiceNotAvailableException($res->getStatusCode());
+        if ($statusNotOkSspecification->isSatisfiedBy($this->guzzleRequest->getStatusCode())) {
+            throw new ServiceNotAvailableException($this->guzzleRequest->getStatusCode());
         }
-
-        $this->guzzleRequest = $res;
         return $this;
     }
 
@@ -118,11 +130,20 @@ class IkomRequest implements IRequest
 
     /**
      * @param $loadData
+     * @return mixed
      */
-    public function prepareOptions($loadData)
+    public function prepareOptions(string $method, array $loadData)
     {
+        $options = [
+            'headers' => $this->headers,
+            'http_errors' => false
+        ];
         $options['headers'] = $this->headers;
-        $options['body'] = $loadData;
+        if(in_array($method, ['POST', 'PUT']) === true ) {
+            $options['form_params'] = $loadData;
+        }else if(count($loadData) > 0){
+            $options['body'] = $loadData;
+        }
 
         return $options;
     }
@@ -168,7 +189,7 @@ class IkomRequest implements IRequest
      * @param $loadData
      * @return IkomRequest
      */
-    public function post($uri, $loadData)
+    public function post($uri, $loadData = [])
     {
         return $this->makeRequest('POST', $uri, $loadData);
     }
@@ -184,9 +205,10 @@ class IkomRequest implements IRequest
 
     /**
      * @param $uri
+     * @param array $loadData
      * @return IkomRequest
      */
-    public function put($uri, $loadData)
+    public function put($uri, $loadData = [])
     {
         return $this->makeRequest('PUT', $uri, $loadData);
     }
